@@ -130,12 +130,14 @@ function createTable(columns, options, partialText, wholeText){
                                 pic.position[1] + 150/2 + picBox.position[1] - picBox.height/2];
         
                 // Crop the picture with the frame
-                var clipgroup = app.activeDocument.groupItems.add(grpPics); // meneekö grpPicsiin?
+                var clipgroup = app.activeDocument.groupItems.add();
 
                 pic.moveToBeginning(clipgroup);
 				picBox.moveToBeginning(clipgroup);
                 picBox.clipping = true;
                 clipgroup.clipped = true;
+                
+                clipgroup.moveToBeginning(grpPics);
 				
                 // Move the clipgroup to the final destination
 				positionByTileNo(clipgroup, prototypeToFirstCell, matrixCellDimensions, tileNo, columns, 0)
@@ -295,7 +297,7 @@ function cropWithName(nimi){
         var pic = insertPicture2(currentDirectory() + '../pictures/', picName[nimi], '.jpg', picSettings[picName[nimi]]);
         return pic;
     }else if (picName[nimi]){
-        var pic = insertPicture2(currentDirectory() + '../pictures/', picName[nimi], '.jpg', [1, 0, 0, 1, 0, 0]);
+        var pic = insertPicture2(currentDirectory() + '../pictures/', picName[nimi], '.jpg', [0, -150, 100, -150]);
         return pic;
     }else{
         throw new Error("The person does not have a picture file name. Add it to data_picFileName.js.");
@@ -304,40 +306,77 @@ function cropWithName(nimi){
 
 function readCropSettings(){
     var artboardRect = app.activeDocument.artboards[0].artboardRect;
-    if (artboardRect[0] != 0 || artboardRect[1] != 0 || artboardRect[2] != 100 || artboardRect[3] != -150){ throw new Error("The artboard in this document has wrong dimensions and/or is at wrong position. Create a working document by running script_crop_createDoc.jsx."); }
+    if (artboardRect[0] != 0 || artboardRect[1] != 0 || artboardRect[2] != 100 || artboardRect[3] != -150){ throw new Error("Dokumentin artboard on väärän kokoinen ja/tai väärässä paikassa. Tee uusi dokumentti funktion avulla."); }
 
     pic1 = app.activeDocument.selection[0];
-    if (!pic1){ throw new Error("Select the picture you want to crop.")}
+    if (!pic1){ throw new Error("Valitse rajattava kuva Illustratorissa.")}
     mat = pic1.matrix;
-    array = [mat.mValueA,
-             mat.mValueB,
-             mat.mValueC,
-             mat.mValueD,
-             //mat.mValueTX,
-             //mat.mValueTY,
-             pic1.position[0],
-             pic1.position[1]];
+
+    var sine = mat.mValueB;
+    var cosine = mat.mValueA;
+    var alpha = Math.asin(sine / Math.sqrt(sine*sine + cosine*cosine))*180 / Math.PI;
+    var rot = alpha
+    pic1.rotate(rot);
+    
+    var ex =-pic1.width / 2;
+    var ey =-pic1.height/ 2;
+    var fx = pic1.width / 2;
+    var fy =-pic1.height/ 2;
+
+    alpha = alpha * Math.PI / 180;
+    var s = Math.sin(-alpha);
+    var c = Math.cos(-alpha);
+
+    var Ex = c*ex - s*ey;
+    var Ey = s*ex + c*ey;
+    var Fx = c*fx - s*fy;
+    var Fy = s*fx + c*fy;
+
+    Ex = pic1.position[0] + pic1.width /2 + Ex;
+    Ey = pic1.position[1] - pic1.height/2 + Ey;
+    Fx = pic1.position[0] + pic1.width /2 + Fx;
+    Fy = pic1.position[1] - pic1.height/2 + Fy;
+    
+    pic1.rotate(-rot);
+    
     var pathSplit = pic1.file.toString().split("/");
     var fileName = pathSplit[pathSplit.length -1].split(".")[0];
     fileName = decodeURIComponent(fileName); // Converts e.g. "%20" to " "
     var picSettings = JSON.parse(readFile(currentDirectory() + "data_picSettings.js"));
-    picSettings[fileName] = array;
+    picSettings[fileName] = [Ex, Ey, Fx, Fy];
     writeFile(currentDirectory() + "data_picSettings.js", JSON.stringify(picSettings,null,1));
-    return "Settings for '" + fileName + "' were saved successfully.";
+    return "Kuvan '" + fileName + "' tiedot tallennettiin onnistuneesti"
 }
 
 function insertPicture2(path, name, suffix, matrixArray){
-    var itemToPlace = app.activeDocument.placedItems.add(); // If error, chech Target illustrator
+    var Ex = matrixArray[0];
+    var Ey = matrixArray[1];
+    var Fx = matrixArray[2];
+    var Fy = matrixArray[3];
+    var itemToPlace = app.activeDocument.placedItems.add(); // Target illustrator
+    // "/d/toimaritaulutin/Kuva Yksi.jpg"
     filepath = path + name + suffix;
-    $.writeln(filepath);
     itemToPlace.file = new File(filepath);
-    itemToPlace.matrix.mValueA = matrixArray[0];
-    itemToPlace.matrix.mValueB = matrixArray[1];
-    itemToPlace.matrix.mValueC = matrixArray[2];
-    itemToPlace.matrix.mValueD = matrixArray[3];
-    //itemToPlace.matrix.mValueTX = matrixArray[4];
-    //itemToPlace.matrix.mValueTY = matrixArray[5];
-    itemToPlace.position = [matrixArray[4], matrixArray[5]];
+    lenEF = Math.sqrt(Math.pow(Ex-Fx,2) + Math.pow(Ey-Fy,2));
+    itemToPlace.height = itemToPlace.height / itemToPlace.width * lenEF;
+    itemToPlace.width = lenEF;
+    rotation = Math.acos((Fx-Ex) / Math.sqrt(Math.pow(Ex-Fx,2) + Math.pow(Ey-Fy,2)))
+    if (Fy > Ey){rotation = -rotation;}
+    
+    ex =-itemToPlace.width / 2;
+    ey =-itemToPlace.height/ 2;
+
+    s = Math.sin(-rotation);
+    c = Math.cos(-rotation);
+
+    ExNow = c*ex - s*ey;
+    EyNow = s*ex + c*ey;
+
+    ExNow = itemToPlace.position[0] + itemToPlace.width /2 + ExNow;
+    EyNow = itemToPlace.position[1] - itemToPlace.height/2 + EyNow;
+
+    itemToPlace.rotate(-rotation*180/Math.PI);
+    itemToPlace.position = [itemToPlace.position[0] - ExNow + Ex, itemToPlace.position[1] - EyNow + Ey];
     return itemToPlace;
 }
 

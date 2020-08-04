@@ -17,14 +17,10 @@ var columns = 6 // 12 in 2018 - 14 in 2019 - 13 in 2020
 // Replaces left text with the one on the right. 
 var partialText = {
     "Todennäköisyyslaskenta" : "Todennäköisyys-\nlaskenta",
-    "a": "A",
-    "H" : "h"
     };
 
 // Replaces text if the text is a perfect match
 var wholeText = {
-    "Klassinen fysiikka" : "Klas. fys.",
-    "Matemaatikot" : "Lasku\njäbät"
     };
 
 var options = {

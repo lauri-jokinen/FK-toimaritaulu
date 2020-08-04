@@ -1,18 +1,18 @@
 {
 "Matemaatikot": {
 "Todennäköisyyslaskenta": ["Carl Friedrich Gauss"],
-"Sarjat": ["Carl Friedrich Gauss", "Leonhard Euler"],
-"Kompleksilaskenta":["Leonhard Euler"],
-"Intgraalit" : ["Sir Isaac Newton"],
+"Analyysi": ["Carl Friedrich Gauss", "Leonhard Euler"],
+"Differentiaalilaskenta" : ["Sir Isaac Newton"],
 "Tyhjäntoimittaja" : []
 },
 
-"Fysiikot":
+"Fyysikot":
 {
-"Suhteellisuusteoria": ["Stephen Hawking", "Albert Einstein"],
-"Hiukkasfysiikka": ["Richard Feynman"],
+"Kosmologia": ["Stephen Hawking"],
+"Suhteellisuusteoria": ["Albert Einstein"],
+"Kvanttifysiikka": ["Richard Feynman"],
 "Säteily": ["Marie Curie"],
-"Klassinen fysiikka": ["Sir Isaac Newton", "Galileo Galilei"],
-"Tähtitiede": ["Galileo Galilei", "Stephen Hawking"]
+"Klassinen mekaniikka": ["Sir Isaac Newton"],
+"Tähtitiede": ["Galileo Galilei"]
 }
 }
