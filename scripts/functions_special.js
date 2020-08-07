@@ -3,7 +3,8 @@
 #include "functions_basic.js"
 
 function createTable(columns, options, partialText, wholeText){
-	// Read JSON data
+	// Read and check JSON data
+	checkDataFormat()
     var data = arrangeData(importData());
     var picName = importPicNames();
     var picSettings = importPicSettings();
@@ -165,6 +166,7 @@ function row(tileNo, columns){ return Math.floor((tileNo) / columns);};
 function col(tileNo, columns){ return tileNo % columns; };
 
 function saveWebJPGs(imageSize, options, quality){ // quality in [0,100]
+	checkDataFormat()
 	var globalScale = options["scale"] || 70;
     var globalY = options["shiftY"] || 0;
     var globalX = options["shiftX"] || 0;
@@ -289,6 +291,7 @@ function printMissingInformation(){ // Works only with arranged data. Prints mis
 ////////////////////////////////////////////////////////////
 
 function cropWithName(nimi){
+	checkDataFormat()
     // Load JSON data
     var picName = importPicNames();
     var picSettings = importPicSettings();
@@ -305,6 +308,7 @@ function cropWithName(nimi){
 }
 
 function readCropSettings(){
+	checkDataFormat()
     var artboardRect = app.activeDocument.artboards[0].artboardRect;
     if (artboardRect[0] != 0 || artboardRect[1] != 0 || artboardRect[2] != 100 || artboardRect[3] != -150){ throw new Error("Dokumentin artboard on väärän kokoinen ja/tai väärässä paikassa. Tee uusi dokumentti funktion avulla."); }
 
@@ -403,3 +407,53 @@ function webPicDirectory()  { // Returns the web picture directory. Creates the 
 function importData()       { return JSON.parse(readFile(currentDirectory() + "data_structure.js")); };
 function importPicNames()   { return JSON.parse(readFile(currentDirectory() + "data_picFileNames.js")); };
 function importPicSettings(){ return JSON.parse(readFile(currentDirectory() + "data_picSettings.js")); };
+
+function checkDataFormat(){
+	var dataStructure = importData();
+	for (jaos in dataStructure) {
+		if (typeof(jaos) != "string"){
+			throw new Error("Jaoksien nimet tulee olla 'string'-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+		if (typeof(dataStructure[jaos]) != "object"){
+			throw new Error("Jaos '"+ jaos +"' tulee olla JSON-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+		for (virka in dataStructure[jaos]){
+			if (typeof(virka) != "string"){
+				throw new Error("Jaoksen '" + jaos + "' virkojen nimet tulee olla 'string'-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+			};
+			if (typeof(dataStructure[jaos][virka]) != "object"){
+				throw new Error("Viran '" + jaos + "/" + virka + "' henkilöiden nimet tulee olla 'array'-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+			};
+			for (var i=0; i<dataStructure[jaos][virka].length; i++){
+				if (typeof(dataStructure[jaos][virka][i]) != "string"){
+					throw new Error("Henkilöiden nimet tulee olla 'string'-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+				};
+			};
+		};
+	};
+    
+	var picNames = importPicNames();
+	for (nimi in picNames) {
+		if (typeof(nimi) != "string"){
+			throw new Error("Henkilöiden nimet tulee olla 'string'-muodossa tiedostossa 'data_picFileNames.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+		if (typeof(picNames[nimi]) != "string"){
+			throw new Error("Henkilön '"+ nimi +"' kuvan nimi tulee olla 'string'-muodossa tiedostossa 'data_picFileNames.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+	};
+	
+	var picSettings = importPicSettings();
+	for (picName in picSettings) {
+		if (typeof(picName) != "string"){
+			throw new Error("Kuvien nimet tulee olla 'string'-muodossa tiedostossa 'data_picSettings.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+		if (typeof(picSettings[picName]) != "object" || picSettings[picName].length != 4){
+			throw new Error("Kuvan '"+ picName +"' rajaustiedot tulee olla 'array'-muodossa tiedostossa 'data_picSettings.js'! Arrayssa pitää olla 4 lukua. Tarkista tiedoston muotoilu käyttöohjeesta.");
+		};
+		for (var i=0; i<4; i++){
+			if (typeof(picSettings[picName][i]) != "number" || !isFinite(picSettings[picName][i]) ){
+				throw new Error("Kuvan '"+ picName +"' rajaustiedot tulee olla numeroita (Infinity tai NaN eivät kelpaa) tiedostossa 'data_picSettings.js'! Tarkista tiedoston muotoilu käyttöohjeesta.")
+			};
+		};
+	};
+};
