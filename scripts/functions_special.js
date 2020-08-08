@@ -409,7 +409,11 @@ function importPicNames()   { return JSON.parse(readFile(currentDirectory() + "d
 function importPicSettings(){ return JSON.parse(readFile(currentDirectory() + "data_picSettings.js")); };
 
 function checkDataFormat(){
-	var dataStructure = importData();
+	try{
+		var dataStructure = importData();
+	}catch(err){
+		throw new Error("Tiedosto 'data_structure.js' puuttuu tai se ei ole oikeassa JSON-muodossa! Tiedoston sisällön voi vaikka syöttää jsonlint.com:iin, joka kertoo tarkemmin missä virheet ovat.");
+	};
 	for (jaos in dataStructure) {
 		if (typeof(jaos) != "string"){
 			throw new Error("Jaoksien nimet tulee olla 'string'-muodossa tiedostossa 'data_structure.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
@@ -431,8 +435,12 @@ function checkDataFormat(){
 			};
 		};
 	};
-    
-	var picNames = importPicNames();
+
+	try{
+		var picNames = importPicNames();
+	}catch(err){
+		throw new Error("Tiedosto 'data_picFileNames.js' puuttuu tai se ei ole oikeassa JSON-muodossa! Tiedoston sisällön voi vaikka syöttää jsonlint.com:iin, joka kertoo tarkemmin missä virheet ovat.");
+	};
 	for (nimi in picNames) {
 		if (typeof(nimi) != "string"){
 			throw new Error("Henkilöiden nimet tulee olla 'string'-muodossa tiedostossa 'data_picFileNames.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
@@ -441,8 +449,12 @@ function checkDataFormat(){
 			throw new Error("Henkilön '"+ nimi +"' kuvan nimi tulee olla 'string'-muodossa tiedostossa 'data_picFileNames.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");
 		};
 	};
-	
-	var picSettings = importPicSettings();
+
+	try{
+		var picSettings = importPicSettings();
+	}catch(err){
+		throw new Error("Tiedosto 'data_picSettings.js' puuttuu tai se ei ole oikeassa JSON-muodossa! Tiedoston sisällön voi vaikka syöttää jsonlint.com:iin, joka kertoo tarkemmin missä virheet ovat.");
+	};
 	for (picName in picSettings) {
 		if (typeof(picName) != "string"){
 			throw new Error("Kuvien nimet tulee olla 'string'-muodossa tiedostossa 'data_picSettings.js'! Tarkista tiedoston muotoilu käyttöohjeesta.");

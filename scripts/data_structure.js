@@ -1,18 +1,14 @@
 {
-"Matemaatikot": {
-"Todennäköisyyslaskenta": ["Carl Friedrich Gauss"],
-"Analyysi": ["Carl Friedrich Gauss", "Leonhard Euler"],
-"Differentiaalilaskenta" : ["Sir Isaac Newton"],
-"Tyhjäntoimittaja" : []
+"Toimintajaos": {
+"Toiminnankarsastaja": ["Richard Feynman"],
+"Sikaosasto": ["Carl Friedrich Gauss", "Leonhard Euler", "Richard Feynman"],
+"Harmistovastaava" : ["Sir Isaac Newton"]
 },
 
-"Fyysikot":
+"Hupijaos":
 {
-"Kosmologia": ["Stephen Hawking"],
-"Suhteellisuusteoria": ["Albert Einstein"],
-"Kvanttifysiikka": ["Richard Feynman"],
-"Säteily": ["Marie Curie"],
-"Klassinen mekaniikka": ["Sir Isaac Newton"],
-"Tähtitiede": ["Galileo Galilei"]
+"Hupiveikko": ["Stephen Hawking", "Albert Einstein", "Sir Isaac Newton"],
+"Suurmestari": ["Richard Feynman", "Marie Curie"],
+"Viiksekäs": ["Galileo Galilei", "Albert Einstein"]
 }
 }

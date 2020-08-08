@@ -12,7 +12,7 @@ How to:
     Rectangle: From which the photo is masked.
 */
 
-var columns = 6 // 12 in 2018 - 14 in 2019 - 13 in 2020
+var columns = 7 // 12 in 2018 - 14 in 2019 - 13 in 2020
 
 // Replaces left text with the one on the right. 
 var partialText = {
