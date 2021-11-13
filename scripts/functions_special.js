@@ -2,7 +2,7 @@
 #include "json2.js"
 #include "functions_basic.js"
 
-function createTable(columns, options, partialText, wholeText){
+function createMatrix(columns, options, partialText, wholeText){
 	// Read and check JSON data
 	checkDataFormat()
     var data = arrangeData(importData());
