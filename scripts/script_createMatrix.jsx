@@ -31,4 +31,4 @@ var options = {
     "topMargin" : 180
     };
 
-createTable(columns, options, partialText, wholeText);
+createMatrix(columns, options, partialText, wholeText);
